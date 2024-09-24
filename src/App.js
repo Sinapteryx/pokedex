@@ -72,46 +72,54 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1 className="text-3xl font-bold">Pokedex</h1>
-      <ul className="my-4 space-y-2">
-        {pokemonList.map((pokemon, index) => {
-          const id = index + 1; // Pokémon ID (1-151)
-          return (
-            <li
-              key={id}
-              className="cursor-pointer p-2 border rounded hover:bg-gray-200"
-              onClick={() => fetchPokemonDetails(pokemon.url)}
-            >
-              <span className="font-bold">#{id}</span> {pokemon.name}
-            </li>
-          );
-        })}
-      </ul>
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <div className="w-1/3 md:w-1/4 bg-gray-100 p-4 overflow-y-auto">
+        <h1 className="text-2xl font-bold">Pokédex</h1>
+        <ul className="my-4 space-y-2">
+          {pokemonList.map((pokemon, index) => {
+            const id = index + 1;
+            return (
+              <li
+                key={id}
+                className="cursor-pointer p-2 border rounded hover:bg-gray-200"
+                onClick={() => fetchPokemonDetails(pokemon.url)}
+              >
+                <span className="font-bold">#{id}</span> {pokemon.name}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
 
-      {selectedPokemon && (
-        <div className="border p-4 rounded shadow-lg mt-4">
-          <h2 className="text-2xl">{selectedPokemon.name}</h2>
-          <p>Height: {formatHeight(selectedPokemon.height)} cm</p>
-          <p>Weight: {formatWeight(selectedPokemon.weight)} kg</p>
-          <p>Gender: {selectedPokemon.gender || 'Unknown'}</p>
-          <p>Category: {selectedPokemon.species?.name || 'Unknown'}</p>
-          <p>Abilities:</p>
-          <ul className="list-disc pl-5">
-            {selectedPokemon.abilities.map((ability, index) => (
-              <li key={index}>{ability.ability.name}</li>
-            ))}
-          </ul>
-          <p>Type:</p>
-          <ul className="list-disc pl-5">
-            {selectedPokemon.types.map((typeInfo, index) => (
-              <li key={index}>{typeInfo.type.name}</li>
-            ))}
-          </ul>
-          <p>Weaknesses:</p>
-          <p>{getWeaknesses(selectedPokemon.types)}</p>
-        </div>
-      )}
+      {/* Main Content Area */}
+      <div className="flex-1 p-4 overflow-y-auto">
+        {selectedPokemon ? (
+          <div className="border p-4 rounded shadow-lg">
+            <h2 className="text-2xl">{selectedPokemon.name}</h2>
+            <p>Height: {formatHeight(selectedPokemon.height)} cm</p>
+            <p>Weight: {formatWeight(selectedPokemon.weight)} kg</p>
+            <p>Gender: {selectedPokemon.gender || 'Unknown'}</p>
+            <p>Category: {selectedPokemon.species?.name || 'Unknown'}</p>
+            <p>Abilities:</p>
+            <ul className="list-disc pl-5">
+              {selectedPokemon.abilities.map((ability, index) => (
+                <li key={index}>{ability.ability.name}</li>
+              ))}
+            </ul>
+            <p>Type:</p>
+            <ul className="list-disc pl-5">
+              {selectedPokemon.types.map((typeInfo, index) => (
+                <li key={index}>{typeInfo.type.name}</li>
+              ))}
+            </ul>
+            <p>Weaknesses:</p>
+            <p>{getWeaknesses(selectedPokemon.types)}</p>
+          </div>
+        ) : (
+          <p className="text-gray-500">Select a Pokémon to see details.</p>
+        )}
+      </div>
     </div>
   );
 }
