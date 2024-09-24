@@ -86,6 +86,16 @@ function App() {
     );
   };
 
+  // Function to capitalize the first letter of a string
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  // Function to format the stat label
+  const formatStatLabel = (statName) => {
+    return statName === 'hp' ? 'HP' : capitalizeFirstLetter(statName);
+  };
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
@@ -100,7 +110,7 @@ function App() {
                 className="cursor-pointer p-2 border rounded hover:bg-gray-200"
                 onClick={() => fetchPokemonDetails(pokemon.url)}
               >
-                <span className="font-bold">#{id}</span> {pokemon.name}
+                <span className="font-bold">#{id}</span> {capitalizeFirstLetter(pokemon.name)}
               </li>
             );
           })}
@@ -111,19 +121,19 @@ function App() {
       <div className="flex-1 p-4 overflow-y-auto">
         {selectedPokemon ? (
           <div className="border p-4 rounded shadow-lg">
-            <h2 className="text-2xl">{selectedPokemon.name}</h2>
+            <h2 className="text-2xl">{capitalizeFirstLetter(selectedPokemon.name)}</h2>
             <p>Height: {formatHeight(selectedPokemon.height)} cm</p>
             <p>Weight: {formatWeight(selectedPokemon.weight)} kg</p>
             <p>Abilities:</p>
             <ul className="list-disc pl-5">
               {selectedPokemon.abilities.map((ability, index) => (
-                <li key={index}>{ability.ability.name}</li>
+                <li key={index}>{capitalizeFirstLetter(ability.ability.name)}</li>
               ))}
             </ul>
             <p>Type:</p>
             <ul className="list-disc pl-5">
               {selectedPokemon.types.map((typeInfo, index) => (
-                <li key={index}>{typeInfo.type.name}</li>
+                <li key={index}>{capitalizeFirstLetter(typeInfo.type.name)}</li>
               ))}
             </ul>
             <p>Weaknesses:</p>
@@ -133,7 +143,7 @@ function App() {
             {selectedPokemon.stats.map((stat) => (
               <ProgressBar
                 key={stat.stat.name}
-                label={stat.stat.name.charAt(0).toUpperCase() + stat.stat.name.slice(1)}
+                label={formatStatLabel(stat.stat.name)} // Use the formatted stat label
                 value={stat.base_stat}
               />
             ))}
