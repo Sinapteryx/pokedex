@@ -71,6 +71,21 @@ function App() {
     return weight / 10; // Convert to kilograms
   };
 
+  // ProgressBar Component
+  const ProgressBar = ({ label, value }) => {
+    return (
+      <div className="mb-2">
+        <label className="block mb-1">{label}: {value}</label>
+        <div className="bg-gray-200 rounded-full h-4">
+          <div
+            className="bg-blue-600 h-4 rounded-full"
+            style={{ width: `${value / 255 * 100}%` }} // Assuming max stat value is 255
+          ></div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
@@ -99,8 +114,6 @@ function App() {
             <h2 className="text-2xl">{selectedPokemon.name}</h2>
             <p>Height: {formatHeight(selectedPokemon.height)} cm</p>
             <p>Weight: {formatWeight(selectedPokemon.weight)} kg</p>
-            <p>Gender: {selectedPokemon.gender || 'Unknown'}</p>
-            <p>Category: {selectedPokemon.species?.name || 'Unknown'}</p>
             <p>Abilities:</p>
             <ul className="list-disc pl-5">
               {selectedPokemon.abilities.map((ability, index) => (
@@ -115,6 +128,15 @@ function App() {
             </ul>
             <p>Weaknesses:</p>
             <p>{getWeaknesses(selectedPokemon.types)}</p>
+
+            <h3 className="text-xl mt-4">Stats:</h3>
+            {selectedPokemon.stats.map((stat) => (
+              <ProgressBar
+                key={stat.stat.name}
+                label={stat.stat.name.charAt(0).toUpperCase() + stat.stat.name.slice(1)}
+                value={stat.base_stat}
+              />
+            ))}
           </div>
         ) : (
           <p className="text-gray-500">Select a Pokémon to see details.</p>
