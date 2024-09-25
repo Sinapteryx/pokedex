@@ -19,6 +19,7 @@ function App() {
         console.error('Error fetching Pokémon:', error);
       });
   }, []);
+
   const fetchPokemonDetails = (url) => {
     axios
       .get(url)
