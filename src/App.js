@@ -58,7 +58,7 @@ function App() {
         typeWeaknesses.forEach((weakness) => weaknesses.add(weakness));
       }
     });
-    return Array.from(weaknesses).join(', '); // Convert Set back to array and join
+    return Array.from(weaknesses); // Convert Set back to array
   };
 
   // Function to format height from decimetres to centimeters
@@ -120,36 +120,80 @@ function App() {
       {/* Main Content Area */}
       <div className="flex-1 p-4 overflow-y-auto">
         {selectedPokemon ? (
-          <div className="border p-4 rounded shadow-lg">
-            <h2 className="text-2xl">{capitalizeFirstLetter(selectedPokemon.name)}</h2>
-            <p>Height: {formatHeight(selectedPokemon.height)} cm</p>
-            <p>Weight: {formatWeight(selectedPokemon.weight)} kg</p>
-            <p>Abilities:</p>
-            <ul className="list-disc pl-5">
-              {selectedPokemon.abilities.map((ability, index) => (
-                <li key={index}>{capitalizeFirstLetter(ability.ability.name)}</li>
-              ))}
-            </ul>
-            <p>Type:</p>
-            <ul className="list-disc pl-5">
-              {selectedPokemon.types.map((typeInfo, index) => (
-                <li key={index}>{capitalizeFirstLetter(typeInfo.type.name)}</li>
-              ))}
-            </ul>
-            <p>Weaknesses:</p>
-            <p>{getWeaknesses(selectedPokemon.types)}</p>
-
-            <h3 className="text-xl mt-4">Stats:</h3>
-            {selectedPokemon.stats.map((stat) => (
-              <ProgressBar
-                key={stat.stat.name}
-                label={formatStatLabel(stat.stat.name)} // Use the formatted stat label
-                value={stat.base_stat}
-              />
-            ))}
+          <div className="border p-4 rounded shadow-lg mb-4 flex">
+            <div className="flex-1">
+              <h2 className="text-2xl">{capitalizeFirstLetter(selectedPokemon.name)}</h2>
+              <p>Height: {formatHeight(selectedPokemon.height)} cm</p>
+              <p>Weight: {formatWeight(selectedPokemon.weight)} kg</p>
+            </div>
+            <img 
+              src={selectedPokemon.sprites.front_default} 
+              alt={selectedPokemon.name} 
+              className="w-24 h-24 object-contain ml-4"
+            />
           </div>
         ) : (
           <p className="text-gray-500">Select a Pokémon to see details.</p>
+        )}
+
+        {/* Abilities */}
+        {selectedPokemon && (
+          <>
+            <h3 className="text-xl mt-4">Abilities:</h3>
+            <div className="flex flex-wrap">
+              {selectedPokemon.abilities.map((ability, index) => (
+                <button key={index} className="m-1 bg-blue-500 text-white rounded px-3 py-1">
+                  {capitalizeFirstLetter(ability.ability.name)}
+                </button>
+              ))}
+            </div>
+
+            {/* Types */}
+            <h3 className="text-xl mt-4">Types:</h3>
+            <div className="flex flex-wrap">
+              {selectedPokemon.types.map((typeInfo, index) => (
+                <button key={index} className="m-1 bg-green-500 text-white rounded px-3 py-1">
+                  {capitalizeFirstLetter(typeInfo.type.name)}
+                </button>
+              ))}
+            </div>
+
+            {/* Weaknesses */}
+            <h3 className="text-xl mt-4">Weaknesses:</h3>
+            <div className="flex flex-wrap">
+              {getWeaknesses(selectedPokemon.types).map((weakness, index) => (
+                <button key={index} className="m-1 bg-red-500 text-white rounded px-3 py-1">
+                  {capitalizeFirstLetter(weakness)}
+                </button>
+              ))}
+            </div>
+
+            {/* Held Items */}
+            {selectedPokemon.held_items && selectedPokemon.held_items.length > 0 && (
+              <>
+                <h3 className="text-xl mt-4">Held Items:</h3>
+                <div className="flex flex-wrap">
+                  {selectedPokemon.held_items.map((item, index) => (
+                    <button key={index} className="m-1 bg-yellow-500 text-white rounded px-3 py-1">
+                      {capitalizeFirstLetter(item.item.name)}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Stats */}
+            <h3 className="text-xl mt-4">Stats:</h3>
+            <div className="border p-4 rounded shadow-lg">
+              {selectedPokemon.stats.map((stat) => (
+                <ProgressBar
+                  key={stat.stat.name}
+                  label={formatStatLabel(stat.stat.name)} // Use the formatted stat label
+                  value={stat.base_stat}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
