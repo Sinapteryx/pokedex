@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
   const [pokemonList, setPokemonList] = useState([]);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('number'); // Default sorting by number
 
   useEffect(() => {
     axios
@@ -15,7 +19,6 @@ function App() {
         console.error('Error fetching Pokémon:', error);
       });
   }, []);
-
   const fetchPokemonDetails = (url) => {
     axios
       .get(url)
@@ -96,21 +99,63 @@ function App() {
     return statName === 'hp' ? 'HP' : capitalizeFirstLetter(statName);
   };
 
+  // Function to handle sorting
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+  };
+
+  // Function to filter and sort the Pokémon list
+  const getFilteredAndSortedPokemons = () => {
+    const filteredList = pokemonList.filter((pokemon, index) =>
+      pokemon.name.includes(searchTerm.toLowerCase()) || (index + 1).toString().includes(searchTerm)
+    );
+
+    return filteredList.sort((a, b) => {
+      if (sortOption === 'number') {
+        return (pokemonList.indexOf(a) - pokemonList.indexOf(b));
+      }
+      return a.name.localeCompare(b.name);
+    });
+  };
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
       <div className="w-1/3 md:w-1/4 bg-gray-100 p-4 overflow-y-auto">
         <h1 className="text-2xl font-bold">Pokédex</h1>
+        
+        {/* Search Input and Sort Options on the same line */}
+        <div className="flex items-center mb-4">
+          <div className="relative">
+            <FontAwesomeIcon icon={faSort} className="absolute left-2 top-1/2 transform -translate-y-1/2" />
+            <select
+              className="border rounded-l p-2 pl-8 pr-2"
+              value={sortOption}
+              onChange={handleSortChange}
+            >
+              <option value="number">By Number</option>
+              <option value="name">By Name</option>
+            </select>
+          </div>
+          <input
+            type="text"
+            placeholder="Search Pokémon"
+            className="border rounded-r p-2 w-full ml-2"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
         <ul className="my-4 space-y-2">
-          {pokemonList.map((pokemon, index) => {
-            const id = index + 1;
+          {getFilteredAndSortedPokemons().map((pokemon) => {
+            const originalIndex = pokemonList.indexOf(pokemon) + 1; // Get the original index + 1 for the number
             return (
               <li
-                key={id}
+                key={originalIndex}
                 className="cursor-pointer p-2 border rounded hover:bg-gray-200"
                 onClick={() => fetchPokemonDetails(pokemon.url)}
               >
-                <span className="font-bold">#{id}</span> {capitalizeFirstLetter(pokemon.name)}
+                <span className="font-bold">#{originalIndex}</span> {capitalizeFirstLetter(pokemon.name)}
               </li>
             );
           })}
@@ -163,36 +208,20 @@ function App() {
             <div className="flex flex-wrap">
               {getWeaknesses(selectedPokemon.types).map((weakness, index) => (
                 <button key={index} className="m-1 bg-red-500 text-white rounded px-3 py-1">
-                  {capitalizeFirstLetter(weakness)}
+                  {weakness}
                 </button>
               ))}
             </div>
 
-            {/* Held Items */}
-            {selectedPokemon.held_items && selectedPokemon.held_items.length > 0 && (
-              <>
-                <h3 className="text-xl mt-4">Held Items:</h3>
-                <div className="flex flex-wrap">
-                  {selectedPokemon.held_items.map((item, index) => (
-                    <button key={index} className="m-1 bg-yellow-500 text-white rounded px-3 py-1">
-                      {capitalizeFirstLetter(item.item.name)}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-
             {/* Stats */}
             <h3 className="text-xl mt-4">Stats:</h3>
-            <div className="border p-4 rounded shadow-lg">
-              {selectedPokemon.stats.map((stat) => (
-                <ProgressBar
-                  key={stat.stat.name}
-                  label={formatStatLabel(stat.stat.name)} // Use the formatted stat label
-                  value={stat.base_stat}
-                />
-              ))}
-            </div>
+            {selectedPokemon.stats.map((statInfo, index) => (
+              <ProgressBar 
+                key={index} 
+                label={formatStatLabel(statInfo.stat.name)} 
+                value={statInfo.base_stat} 
+              />
+            ))}
           </>
         )}
       </div>
